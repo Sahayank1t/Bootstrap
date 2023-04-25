@@ -77,4 +77,72 @@
       XLSX.writeFile(wb, "table.xlsx");
     });
   });
+  
+  
+  <!-- Include the Bootstrap and SheetJS libraries -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
+<!-- Add a button to trigger the export -->
+<button onclick="exportToExcel()">Export to Excel</button>
+
+<!-- Add the collapsible Bootstrap table -->
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead style="background-color: #337ab7; color: #fff;">
+      <tr>
+        <th>#</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Username</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-toggle="collapse" data-target="#row1" class="clickable">
+        <td>1</td>
+        <td>John</td>
+        <td>Doe</td>
+        <td>@johndoe</td>
+      </tr>
+      <tr id="row1" class="collapse">
+        <td colspan="4">
+          Additional details about John Doe...
+        </td>
+      </tr>
+      <tr data-toggle="collapse" data-target="#row2" class="clickable">
+        <td>2</td>
+        <td>Jane</td>
+        <td>Doe</td>
+        <td>@janedoe</td>
+      </tr>
+      <tr id="row2" class="collapse">
+        <td colspan="4">
+          Additional details about Jane Doe...
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+function exportToExcel() {
+  // Get the table element
+  var table = document.querySelector(".table");
+
+  // Convert the table to a SheetJS workbook
+  var workbook = XLSX.utils.table_to_book(table);
+
+  // Set the background color of the header row
+  var ws = workbook.Sheets[workbook.SheetNames[0]];
+  var headerRange = XLSX.utils.decode_range(ws['!ref']);
+  for (var col = headerRange.s.c; col <= headerRange.e.c; col++) {
+    var cell = XLSX.utils.encode_cell({r: headerRange.s.r, c: col});
+    ws[cell].s = {fill: {fgColor: {rgb: "337ab7"}}};
+  }
+
+  // Export the workbook to a file
+  XLSX.writeFile(workbook, "table.xlsx");
+}
+</script>
+
 </script>

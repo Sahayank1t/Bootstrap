@@ -33,9 +33,9 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Age</th>
-                      <th>Email</th>
+                      <th style="background-color: #337ab7; color: #fff;">Name</th>
+                      <th style="background-color: #337ab7; color: #fff;">Age</th>
+                      <th style="background-color: #337ab7; color: #fff;">Email</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -64,6 +64,12 @@
       $("#table-container table").each(function(i, table) {
         // Convert the table to a worksheet
         var ws = XLSX.utils.table_to_sheet(table);
+        // Set the header row style
+        var headerStyle = {
+          font: {bold: true},
+          fill: {type: 'pattern', patternType: 'solid', fgColor: {rgb: '337ab7'}}
+        };
+        XLSX.utils.sheet_set_range_style(ws, 'A1:C1', headerStyle);
         // Add the worksheet to the workbook
         XLSX.utils.book_append_sheet(wb, ws, "Sheet" + (i+1));
       });

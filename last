@@ -1,0 +1,90 @@
+<div class="container">
+  <input type="text" id="searchInput" placeholder="Search">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- Table rows will be dynamically generated here -->
+    </tbody>
+  </table>
+  <ul id="pagination" class="pagination"></ul>
+</div>
+
+
+$(document).ready(function() {
+  // Sample data for demonstration
+  var data = [
+    { id: 1, name: 'John Doe', email: 'john@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+    { id: 3, name: 'Bob Johnson', email: 'bob@example.com' },
+    // Add more data as needed
+  ];
+
+  var currentPage = 1;
+  var rowsPerPage = 5; // Number of rows to display per page
+
+  function generateTable() {
+    var startIndex = (currentPage - 1) * rowsPerPage;
+    var endIndex = startIndex + rowsPerPage;
+    var tableRows = '';
+
+    for (var i = startIndex; i < endIndex && i < data.length; i++) {
+      var row = data[i];
+      tableRows += '<tr>';
+      tableRows += '<td>' + row.id + '</td>';
+      tableRows += '<td>' + row.name + '</td>';
+      tableRows += '<td>' + row.email + '</td>';
+      tableRows += '</tr>';
+    }
+
+    $('#tableBody').html(tableRows);
+  }
+
+  function generatePagination() {
+    var totalPages = Math.ceil(data.length / rowsPerPage);
+    var pagination = '';
+
+    for (var i = 1; i <= totalPages; i++) {
+      pagination += '<li class="page-item' + (i === currentPage ? ' active' : '') + '">';
+      pagination += '<a class="page-link" href="#">' + i + '</a>';
+      pagination += '</li>';
+    }
+
+    $('#pagination').html(pagination);
+  }
+
+  function filterTable(searchText) {
+    var filteredData = data.filter(function(row) {
+      return (
+        row.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        row.email.toLowerCase().includes(searchText.toLowerCase())
+      );
+    });
+
+    currentPage = 1;
+    data = filteredData;
+    generateTable();
+    generatePagination();
+  }
+
+  $('#pagination').on('click', '.page-link', function(event) {
+    event.preventDefault();
+    currentPage = parseInt($(this).text(), 10);
+    generateTable();
+    generatePagination();
+  });
+
+  $('#searchInput').on('input', function() {
+    var searchText = $(this).val();
+    filterTable(searchText);
+  });
+
+  // Initial table and pagination generation
+  generateTable();
+  generatePagination();
+});

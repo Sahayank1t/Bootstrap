@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Collapsible Bootstrap Table</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="Search..." id="searchInput">
+    </div>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Column 1</th>
+            <th>Column 2</th>
+            <!-- Add more columns here if needed -->
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Table rows will be populated dynamically using JavaScript -->
+        </tbody>
+      </table>
+    </div>
+    <ul class="pagination" id="pagination"></ul>
+  </div>
+  <!-- Include Bootstrap JS and your custom JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="your-custom-script.js"></script>
+</body>
+</html>
+
+
+
+// Sample data - replace this with your actual data source
+const data = [
+  { column1: "Data 1A", column2: "Data 1B" },
+  { column1: "Data 2A", column2: "Data 2B" },
+  { column1: "Data 3A", column2: "Data 3B" },
+  // Add more data objects here as needed
+];
+
+const itemsPerPage = 5;
+let currentPage = 1;
+
+// Function to generate table rows based on data and pagination
+function generateTableRows(start, end) {
+  const tableBody = document.getElementById("tableBody");
+  tableBody.innerHTML = "";
+  for (let i = start; i < end; i++) {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${data[i].column1}</td>
+      <td>${data[i].column2}</td>
+      <!-- Add more cells here if needed -->
+    `;
+    tableBody.appendChild(row);
+  }
+}
+
+// Function to handle search input
+function handleSearchInput() {
+  const searchInput = document.getElementById("searchInput").value.toLowerCase();
+  const filteredData = data.filter(
+    (item) =>
+      item.column1.toLowerCase().includes(searchInput) ||
+      item.column2.toLowerCase().includes(searchInput)
+  );
+  currentPage = 1;
+  generateTableRows(0, Math.min(itemsPerPage, filteredData.length));
+  generatePagination(filteredData.length);
+}
+
+// Function to generate pagination links
+function generatePagination(totalItems) {
+  const pagination = document.getElementById("pagination");
+  pagination.innerHTML = "";
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  for (let i = 1; i <= totalPages; i++) {
+    const pageLink = document.createElement("li");
+    pageLink.innerHTML = `<a href="#" class="page-link">${i}</a>`;
+    if (i === currentPage) {
+      pageLink.classList.add("active");
+    }
+    pageLink.addEventListener("click", () => {
+      currentPage = i;
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      generateTableRows(start, Math.min(end, totalItems));
+      generatePagination(totalItems);
+    });
+    pagination.appendChild(pageLink);
+  }
+}
+
+// Initial table and pagination generation
+generateTableRows(0, Math.min(itemsPerPage, data.length));
+generatePagination(data.length);
+
+// Add event listener to search input
+document.getElementById("searchInput").addEventListener("input", handleSearchInput);

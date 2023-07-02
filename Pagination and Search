@@ -1,0 +1,78 @@
+<div class="table-container">
+  <table class="table" id="myTable">
+    <thead>
+      <tr>
+        <th>Column 1</th>
+        <th>Column 2</th>
+        <th>Column 3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Value 1</td>
+        <td>Value 2</td>
+        <td>Value 3</td>
+      </tr>
+      <!-- Add more rows as needed -->
+    </tbody>
+  </table>
+</div>
+<div id="pagination-container"></div>
+
+
+
+$(document).ready(function() {
+  // Number of items per page
+  var itemsPerPage = 5;
+
+  // Hide all rows except the first "itemsPerPage" rows
+  $('#myTable tbody tr').hide();
+  $('#myTable tbody tr').slice(0, itemsPerPage).show();
+
+  // Create pagination links
+  var totalPages = Math.ceil($('#myTable tbody tr').length / itemsPerPage);
+  for (var i = 1; i <= totalPages; i++) {
+    $('<a href="#" class="pagination-link">' + i + '</a>').appendTo('#pagination-container');
+  }
+
+  // Handle pagination link click event
+  $('.pagination-link').click(function(e) {
+    e.preventDefault();
+
+    // Get the selected page number
+    var page = $(this).text();
+
+    // Show the appropriate rows based on the selected page
+    var start = (page - 1) * itemsPerPage;
+    var end = start + itemsPerPage;
+    $('#myTable tbody tr').hide().slice(start, end).show();
+  });
+
+  // Handle search input event
+  $('#search-input').on('input', function() {
+    var searchText = $(this).val().toLowerCase();
+
+    // Filter the table rows based on the search text
+    $('#myTable tbody tr').hide().filter(function() {
+      return $(this).text().toLowerCase().indexOf(searchText) > -1;
+    }).show();
+  });
+});
+
+
+
+
+
+
+.table-container {
+  overflow-x: auto;
+}
+
+#pagination-container {
+  margin-top: 10px;
+}
+
+.pagination-link {
+  margin-right: 5px;
+  cursor: pointer;
+}

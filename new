@@ -1,0 +1,97 @@
+<div id="table-container">
+  <table class="table table-striped" id="my-table">
+    <thead>
+      <tr>
+        <th>Column 1</th>
+        <th>Column 2</th>
+        <th>Column 3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Row 1 Data 1</td>
+        <td>Row 1 Data 2</td>
+        <td>Row 1 Data 3</td>
+      </tr>
+      <!-- Add more table rows here -->
+    </tbody>
+  </table>
+</div>
+
+
+
+
+$(document).ready(function() {
+  // Set the number of rows per page
+  var rowsPerPage = 5;
+
+  // Hide all table rows initially
+  $('#my-table tbody tr').hide();
+
+  // Show the first n rows (based on rowsPerPage)
+  $('#my-table tbody tr').slice(0, rowsPerPage).show();
+
+  // Handle the pagination links click event
+  $('#pagination-container').on('click', 'a', function(e) {
+    e.preventDefault();
+
+    var page = $(this).data('page');
+
+    // Calculate the start and end index of the rows to display
+    var startIndex = (page - 1) * rowsPerPage;
+    var endIndex = startIndex + rowsPerPage;
+
+    // Hide all table rows
+    $('#my-table tbody tr').hide();
+
+    // Show the rows within the specified range
+    $('#my-table tbody tr').slice(startIndex, endIndex).show();
+
+    // Update the active pagination link
+    $('#pagination-container a').removeClass('active');
+    $(this).addClass('active');
+  });
+
+  // Handle the search input change event
+  $('#search-input').on('input', function() {
+    var searchText = $(this).val().toLowerCase();
+
+    // Hide all table rows
+    $('#my-table tbody tr').hide();
+
+    // Show the rows that match the search text
+    $('#my-table tbody tr').filter(function() {
+      return $(this).text().toLowerCase().indexOf(searchText) > -1;
+    }).show();
+
+    // Reset pagination to the first page
+    $('#pagination-container a:first').click();
+  });
+
+  // Initialize pagination
+  var totalRows = $('#my-table tbody tr').length;
+  var totalPages = Math.ceil(totalRows / rowsPerPage);
+
+  // Generate pagination links
+  var paginationHTML = '<ul class="pagination">';
+  for (var i = 1; i <= totalPages; i++) {
+    paginationHTML += '<li class="page-item"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+  }
+  paginationHTML += '</ul>';
+
+  // Add pagination links to the container
+  $('#table-container').append('<div id="pagination-container">' + paginationHTML + '</div>');
+
+  // Set the first pagination link as active
+  $('#pagination-container a:first').addClass('active');
+});
+
+
+
+#pagination-container {
+  margin-top: 10px;
+}
+
+#pagination-container .active {
+  font-weight: bold;
+}

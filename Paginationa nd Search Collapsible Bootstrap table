@@ -1,0 +1,70 @@
+<div class="container">
+  <input type="text" id="searchInput" placeholder="Search...">
+  <table id="myTable" class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-toggle="collapse" data-target="#row1" class="accordion-toggle">
+        <td>John Doe</td>
+        <td>30</td>
+      </tr>
+      <tr>
+        <td colspan="2" class="hiddenRow">
+          <div class="accordian-body collapse" id="row1">
+            <p>Details for John Doe</p>
+          </div>
+        </td>
+      </tr>
+      <!-- More rows... -->
+    </tbody>
+  </table>
+  <ul id="pagination" class="pagination"></ul>
+</div>
+
+
+$(document).ready(function() {
+  // Configure pagination
+  var tableRows = $("#myTable tbody tr");
+  var rowsPerPage = 5;
+  var totalPages = Math.ceil(tableRows.length / rowsPerPage);
+
+  // Add pagination links
+  for (var i = 1; i <= totalPages; i++) {
+    $("#pagination").append(`<li class="page-item"><a class="page-link" href="#">${i}</a></li>`);
+  }
+
+  // Show initial page
+  showPage(1);
+
+  // Handle pagination link clicks
+  $("#pagination li").click(function() {
+    var pageNum = $(this).text();
+    showPage(pageNum);
+  });
+
+  // Handle search input
+  $("#searchInput").on("keyup", function() {
+    var searchText = $(this).val().toLowerCase();
+    tableRows.each(function() {
+      var rowText = $(this).text().toLowerCase();
+      $(this).toggle(rowText.indexOf(searchText) > -1);
+    });
+    showPage(1); // Reset to first page after filtering
+  });
+
+  // Function to show rows for a specific page
+  function showPage(pageNum) {
+    tableRows.hide();
+    var startIndex = (pageNum - 1) * rowsPerPage;
+    var endIndex = startIndex + rowsPerPage;
+    tableRows.slice(startIndex, endIndex).show();
+
+    // Update pagination active state
+    $("#pagination li").removeClass("active");
+    $("#pagination li:eq(" + (pageNum - 1) + ")").addClass("active");
+  }
+});

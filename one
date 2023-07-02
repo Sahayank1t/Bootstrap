@@ -1,0 +1,45 @@
+$(document).ready(function() {
+  // Initialize pagination
+  var itemsPerPage = 5; // Number of items to show per page
+  var $table = $('#myTable');
+  var $pagination = $('#pagination');
+  var totalRows = $table.find('tbody tr').length;
+  var totalPages = Math.ceil(totalRows / itemsPerPage);
+
+  // Add pagination links
+  for (var i = 1; i <= totalPages; i++) {
+    var $li = $('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+    $pagination.append($li);
+  }
+
+  // Show selected page
+  showPage(1);
+
+  // Handle pagination click event
+  $pagination.on('click', 'li.page-item', function() {
+    var page = $(this).index() + 1;
+    showPage(page);
+  });
+
+  // Handle search input event
+  $('#searchInput').on('keyup', function() {
+    var searchText = $(this).val().toLowerCase();
+    $table.find('tbody tr').hide().filter(function() {
+      return $(this).text().toLowerCase().indexOf(searchText) > -1;
+    }).show();
+
+    // Reset pagination
+    $pagination.find('li.page-item').removeClass('active');
+    showPage(1);
+  });
+
+  // Function to show the specified page
+  function showPage(page) {
+    var startIndex = (page - 1) * itemsPerPage;
+    var endIndex = startIndex + itemsPerPage;
+
+    $table.find('tbody tr').hide().slice(startIndex, endIndex).show();
+    $pagination.find('li.page-item').removeClass('active');
+    $pagination.find('li.page-item').eq(page - 1).addClass('active');
+  }
+});

@@ -1,0 +1,118 @@
+<div class="container">
+  <input type="text" id="searchInput" placeholder="Search...">
+  <table class="table table-striped" id="myTable">
+    <thead>
+      <tr>
+        <th>Column 1</th>
+        <th>Column 2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-toggle="collapse" data-target="#row1" class="accordion-toggle">
+        <td>Data 1</td>
+        <td>Data 2</td>
+      </tr>
+      <tr>
+        <td colspan="2" class="hiddenRow">
+          <div class="accordian-body collapse" id="row1">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Child Column 1</th>
+                  <th>Child Column 2</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Child Data 1</td>
+                  <td>Child Data 2</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
+      <!-- Additional parent and child rows -->
+    </tbody>
+  </table>
+  <div id="pagination"></div>
+</div>
+
+
+var rowsPerPage = 5; // Number of rows to display per page
+var currentPage = 1; // Current page number
+var table = document.getElementById("myTable");
+var searchInput = document.getElementById("searchInput");
+var pagination = document.getElementById("pagination");
+
+// Function to filter the table rows based on search input
+function filterTable() {
+  var filter = searchInput.value.toUpperCase();
+  var parentRows = table.getElementsByClassName("accordion-toggle");
+  var childRows = table.getElementsByClassName("hiddenRow");
+
+  for (var i = 0; i < parentRows.length; i++) {
+    var parentRowData = parentRows[i].textContent.toUpperCase();
+    var childRowData = childRows[i].textContent.toUpperCase();
+    if (parentRowData.indexOf(filter) > -1 || childRowData.indexOf(filter) > -1) {
+      parentRows[i].style.display = "";
+      childRows[i].style.display = "";
+    } else {
+      parentRows[i].style.display = "none";
+      childRows[i].style.display = "none";
+    }
+  }
+
+  // Reset current page to 1 when search is performed
+  currentPage = 1;
+  updatePagination();
+}
+
+// Function to update the pagination
+function updatePagination() {
+  var parentRows = table.getElementsByClassName("accordion-toggle");
+
+  // Calculate the total number of pages
+  var totalPages = Math.ceil(parentRows.length / rowsPerPage);
+
+  // Clear the existing pagination
+  pagination.innerHTML = "";
+
+  // Create pagination links
+  for (var i = 1; i <= totalPages; i++) {
+    var link = document.createElement("a");
+    link.href = "#";
+    link.innerHTML = i;
+
+    // Highlight the current page
+    if (i === currentPage) {
+      link.className = "active";
+    }
+
+    // Add click event listener to each page link
+    link.addEventListener("click", function () {
+      currentPage = parseInt(this.innerHTML);
+      updatePagination();
+    });
+
+    pagination.appendChild(link);
+  }
+
+  // Hide rows based on current page and rows per page
+  for (var i = 0; i < parentRows.length; i++) {
+    if (i >= currentPage * rowsPerPage || i < (currentPage - 1) * rowsPerPage) {
+      parentRows[i].style.display = "none";
+      childRows[i].style.display = "none";
+    } else {
+      parentRows[i].style.display = "";
+      childRows[i].style.display = "";
+    }
+  }
+}
+
+// Attach input event listener to search input
+searchInput.addEventListener("input", filterTable);
+
+// Initial table setup
+updatePagination();
+

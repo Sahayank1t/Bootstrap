@@ -1,0 +1,86 @@
+<div class="container">
+  <input id="searchInput" type="text" placeholder="Search...">
+  <table id="myTable" class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-toggle="collapse" data-target="#row1">John Doe</td>
+        <td>john@example.com</td>
+        <td>1234567890</td>
+      </tr>
+      <tr id="row1" class="collapse">
+        <td colspan="3">Additional information for John Doe</td>
+      </tr>
+      <tr>
+        <td data-toggle="collapse" data-target="#row2">Jane Smith</td>
+        <td>jane@example.com</td>
+        <td>0987654321</td>
+      </tr>
+      <tr id="row2" class="collapse">
+        <td colspan="3">Additional information for Jane Smith</td>
+      </tr>
+      <!-- Add more rows here -->
+    </tbody>
+  </table>
+  <ul id="pagination" class="pagination"></ul>
+</div>
+
+
+$(document).ready(function() {
+  // Configure table pagination
+  var table = $('#myTable');
+  var maxRows = 5;
+  var numRows = table.find('tbody tr').length;
+  var numPages = Math.ceil(numRows / maxRows);
+  
+  // Generate pagination links
+  for (var i = 1; i <= numPages; i++) {
+    $('#pagination').append('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+  }
+  
+  // Show first page
+  table.find('tbody tr').hide();
+  table.find('tbody tr').slice(0, maxRows).show();
+  $('#pagination li:first-child').addClass('active');
+  
+  // Handle pagination click event
+  $('#pagination li').click(function(e) {
+    e.preventDefault();
+    var page = $(this).text();
+    var start = (page - 1) * maxRows;
+    var end = start + maxRows;
+    
+    // Show/hide table rows based on the selected page
+    table.find('tbody tr').hide();
+    table.find('tbody tr').slice(start, end).show();
+    
+    // Update active pagination link
+    $('#pagination li').removeClass('active');
+    $(this).addClass('active');
+  });
+  
+  // Handle search input event
+  $('#searchInput').keyup(function() {
+    var searchText = $(this).val().toLowerCase();
+    
+    // Filter table rows based on the search input
+    table.find('tbody tr').hide();
+    table.find('tbody tr').each(function() {
+      var rowText = $(this).text().toLowerCase();
+      if (rowText.indexOf(searchText) !== -1) {
+        $(this).show();
+      }
+    });
+    
+    // Reset pagination to first page
+    $('#pagination li').removeClass('active');
+    $('#pagination li:first-child').addClass('active');
+  });
+});
+

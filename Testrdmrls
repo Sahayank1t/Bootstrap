@@ -1,0 +1,24 @@
+// Add a "Read More" button to expand the description
+    var readMoreBtn = $("<button>").text("Read More").addClass("btn btn-link read-more-btn").appendTo(row);
+    readMoreBtn.click(function () {
+      $(this).hide();
+      row.find(".description-cell").text(description);
+    });
+
+
+// Add a "Read Less" button to collapse the description
+    var readLessBtn = $("<button>").text("Read Less").addClass("btn btn-link read-less-btn").hide().appendTo(row);
+    readLessBtn.click(function () {
+      $(this).hide();
+      row.find(".description-cell").text(descriptionShort);
+      row.find(".read-more-btn").show();
+    });
+  });
+
+// Helper function to truncate text
+function truncateText(text, maxLength) {
+  if (text.length > maxLength) {
+    return text.substr(0, maxLength) + "...";
+  }
+  return text;
+}

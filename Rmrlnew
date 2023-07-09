@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dynamic Bootstrap Table</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+  <div id="table-container"></div>
+
+  <!-- Include jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  <script>
+    // Function to truncate the text
+    function truncateText(text, maxLength) {
+      if (text.length <= maxLength) {
+        return text;
+      }
+      const truncated = text.substr(0, maxLength);
+      return truncated.substr(0, truncated.lastIndexOf(" ")) + '...';
+    }
+
+    // Function to toggle between "read more" and "read less"
+    function toggleText(element) {
+      const $text = $(element).closest('.description').find('.text');
+      const isTruncated = $text.data('truncated');
+      const fullText = $text.data('full-text');
+      
+      if (isTruncated) {
+        $text.text(fullText);
+        $(element).text('Read less');
+      } else {
+        $text.text(truncateText(fullText, 100));
+        $(element).text('Read more');
+      }
+      
+      $text.data('truncated', !isTruncated);
+    }
+
+    // Function to load data into the Bootstrap table
+    function loadData() {
+      // Make REST API call to SharePoint list
+      $.ajax({
+        url: "<YOUR_SHAREPOINT_API_ENDPOINT>",
+        method: "GET",
+        headers: {
+          "Accept": "application/json;odata=verbose"
+        },
+        success: function(data) {
+          const items = data.d.results;
+          let tableHtml = '<table class="table">';
+          
+          // Loop through the items and create table rows
+          items.forEach(function(item) {
+            const truncatedDescription = truncateText(item.Description, 100);
+            const fullDescription = item.Description;
+            
+            tableHtml += '<tr>';
+            tableHtml += '<td>' + item.Title + '</td>';
+            tableHtml += '<td class="description">';
+            tableHtml += '<div class="text" data-truncated="true" data-full-text="' + fullDescription + '">' + truncatedDescription + '</div>';
+            tableHtml += '<button class="btn btn-link btn-sm" onclick="toggleText(this)">Read more</button>';
+            tableHtml += '</td>';
+            tableHtml += '</tr>';
+          });
+          
+          tableHtml += '</table>';
+
+          // Append the table to the container
+          $('#table-container').html(tableHtml);
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+
+    // Call the function to load data
+    loadData();
+  </script>
+</body>
+</html>

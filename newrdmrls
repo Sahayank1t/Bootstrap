@@ -1,0 +1,52 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Column 1</th>
+      <th>Column 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="description">Long description for column 1 goes here...</td>
+      <td class="description">Long description for column 2 goes here...</td>
+    </tr>
+    <!-- Add more rows if needed -->
+  </tbody>
+</table>
+
+
+.description {
+  max-height: 50px; /* Set the initial height for the description */
+  overflow: hidden;
+}
+
+.expand {
+  max-height: none !important; /* Override the height to show the full description */
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Get all the description cells
+  const descriptionCells = document.querySelectorAll(".description");
+
+  descriptionCells.forEach(function(cell) {
+    // Check if the description exceeds the max height
+    if (cell.scrollHeight > cell.clientHeight) {
+      // Add the "read-more" link
+      const readMoreLink = document.createElement("a");
+      readMoreLink.setAttribute("href", "#");
+      readMoreLink.classList.add("read-more-link");
+      readMoreLink.textContent = "Read more";
+
+      // Add click event listener to toggle between "read more" and "read less"
+      readMoreLink.addEventListener("click", function(event) {
+        event.preventDefault();
+        cell.classList.toggle("expand");
+        readMoreLink.textContent = cell.classList.contains("expand") ? "Read less" : "Read more";
+      });
+
+      // Append the "read-more" link to the cell
+      cell.appendChild(readMoreLink);
+    }
+  });
+});

@@ -1,0 +1,60 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Description 1</th>
+      <th>Description 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <div class="description-content">
+          <!-- Your long description content here -->
+        </div>
+        <a href="#" class="read-more">Read More</a>
+      </td>
+      <td>
+        <div class="description-content">
+          <!-- Your long description content here -->
+        </div>
+        <a href="#" class="read-more">Read More</a>
+      </td>
+    </tr>
+    <!-- Add more rows as needed -->
+  </tbody>
+</table>
+
+
+.description-content {
+  max-height: 50px; /* Adjust the height as per your requirement */
+  overflow: hidden;
+}
+
+.show-content {
+  max-height: none !important;
+}
+
+.read-more {
+  cursor: pointer;
+  color: blue;
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  var readMoreLinks = document.getElementsByClassName('read-more');
+
+  Array.from(readMoreLinks).forEach(function(link) {
+    link.addEventListener('click', function(event) {
+      event.preventDefault();
+
+      var descriptionContent = this.previousSibling;
+      var isExpanded = descriptionContent.classList.toggle('show-content');
+
+      if (isExpanded) {
+        this.innerHTML = 'Read Less';
+      } else {
+        this.innerHTML = 'Read More';
+      }
+    });
+  });
+});

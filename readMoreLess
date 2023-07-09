@@ -1,0 +1,36 @@
+// Function to truncate the description
+function truncateDescription(descriptionElement, maxLength) {
+  var description = descriptionElement.textContent;
+  if (description.length > maxLength) {
+    descriptionElement.textContent = description.slice(0, maxLength) + '...';
+  }
+}
+
+// Function to expand or collapse the description
+function toggleDescription(element) {
+  var descriptionElement = element.nextElementSibling;
+  descriptionElement.classList.toggle('collapsed');
+}
+
+// Set the desired maximum length for the description
+var maxLength = 50;
+
+// Get all description elements
+var descriptionElements = document.getElementsByClassName('description');
+
+// Iterate over each description element
+Array.from(descriptionElements).forEach(function (descriptionElement) {
+  truncateDescription(descriptionElement, maxLength);
+
+  // Create a "Read More" link
+  var readMoreLink = document.createElement('a');
+  readMoreLink.href = '#';
+  readMoreLink.textContent = 'Read More';
+  readMoreLink.addEventListener('click', function (event) {
+    event.preventDefault();
+    toggleDescription(this);
+  });
+
+  // Append the "Read More" link to the description element
+  descriptionElement.appendChild(readMoreLink);
+});

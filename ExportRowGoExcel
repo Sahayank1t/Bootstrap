@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Collapsible Bootstrap Table</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Data</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr data-toggle="collapse" data-target="#row1" class="clickable">
+            <th scope="row">1</th>
+            <td>Parent Row 1 Data</td>
+            <td><button class="btn btn-primary export-btn">Export</button></td>
+        </tr>
+        <tr id="row1" class="collapse">
+            <td colspan="3">Collapsed Row 1 Data</td>
+        </tr>
+
+        <!-- Add more rows as needed -->
+
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const exportButtons = document.querySelectorAll('.export-btn');
+
+        exportButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                const parentRow = this.closest('tr');
+                const collapsedRow = parentRow.nextElementSibling;
+
+                // Prepare data for export
+                const data = [
+                    [parentRow.cells[0].textContent, parentRow.cells[1].textContent],
+                    [collapsedRow.cells[0].textContent]
+                    // Add more rows as needed
+                ];
+
+                // Create a workbook and add a worksheet
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+                // Save to file
+                XLSX.writeFile(wb, 'exported_data.xlsx');
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkbox Handling</title>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+
+  <label><input type="checkbox" name="example" id="checkbox1"> Checkbox 1</label>
+  <label><input type="checkbox" name="example" id="checkbox2"> Checkbox 2</label>
+  <label><input type="checkbox" name="example" id="checkbox3"> Checkbox 3</label>
+  <label><input type="checkbox" name="example" id="noneCheckbox"> None</label>
+
+  <script>
+    $(document).ready(function(){
+      $('input[name="example"]').on('change', function(){
+        var isChecked = $(this).prop('checked');
+        var checkboxId = $(this).attr('id');
+
+        if (isChecked && checkboxId !== 'noneCheckbox') {
+          $('#noneCheckbox').prop('checked', false);
+        }
+      });
+
+      $('#noneCheckbox').on('change', function(){
+        var isChecked = $(this).prop('checked');
+
+        if (isChecked) {
+          $('input[name="example"]').not('#noneCheckbox').prop('checked', false);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

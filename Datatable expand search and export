@@ -1,4 +1,4 @@
-To implement the export to Excel functionality while maintaining the order of the display (parent header, parent data, child header, child data), you can use a JavaScript library like SheetJS (js-xlsx) to generate the Excel file. Here's the modified code with the export functionality:Below is a basic implementation of the described use case using JavaScript. This includes creating an expandable datatable, searching and selecting parent rows, and exporting selected rows and their child rows to Excel in the specified order:
+Sure, I'll add pagination to the table. Here's the updated code:
 
 ```html
 <!DOCTYPE html>
@@ -6,7 +6,7 @@ To implement the export to Excel functionality while maintaining the order of th
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expandable Datatable</title>
+    <title>Expandable Datatable with Pagination</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -14,6 +14,7 @@ To implement the export to Excel functionality while maintaining the order of th
     <table id="dataTable">
         <!-- Table headers will be generated dynamically -->
     </table>
+    <div id="pagination"></div>
     <button onclick="exportToExcel()">Export to Excel</button>
 
     <script>
@@ -21,25 +22,56 @@ To implement the export to Excel functionality while maintaining the order of th
         const parentData = [
             { id: 1, name: "Parent 1" },
             { id: 2, name: "Parent 2" },
-            { id: 3, name: "Parent 3" }
+            { id: 3, name: "Parent 3" },
+            { id: 4, name: "Parent 4" },
+            { id: 5, name: "Parent 5" },
+            { id: 6, name: "Parent 6" },
+            { id: 7, name: "Parent 7" },
+            { id: 8, name: "Parent 8" },
+            { id: 9, name: "Parent 9" },
+            { id: 10, name: "Parent 10" }
         ];
 
         const childData = [
             { parentId: 1, childName: "Child 1-1" },
             { parentId: 1, childName: "Child 1-2" },
             { parentId: 2, childName: "Child 2-1" },
-            { parentId: 3, childName: "Child 3-1" }
+            { parentId: 3, childName: "Child 3-1" },
+            { parentId: 4, childName: "Child 4-1" },
+            { parentId: 5, childName: "Child 5-1" },
+            { parentId: 6, childName: "Child 6-1" },
+            { parentId: 7, childName: "Child 7-1" },
+            { parentId: 8, childName: "Child 8-1" },
+            { parentId: 9, childName: "Child 9-1" },
+            { parentId: 10, childName: "Child 10-1" }
         ];
 
-        // Function to render table
+        const itemsPerPage = 5;
+        let currentPage = 1;
+
+        // Function to render table with pagination
         function renderTable() {
             const table = document.getElementById('dataTable');
+            const pagination = document.getElementById('pagination');
+            const numPages = Math.ceil(parentData.length / itemsPerPage);
+
+            // Clear existing table and pagination
+            table.innerHTML = '';
+            pagination.innerHTML = '';
+
+            // Generate table headers
             const headerRow = table.createTHead().insertRow();
             headerRow.insertCell().textContent = 'Parent ID';
             headerRow.insertCell().textContent = 'Parent Name';
             headerRow.insertCell().textContent = 'Select';
 
-            parentData.forEach(parent => {
+            // Calculate start and end index for current page
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, parentData.length);
+
+            // Render parent rows for current page
+            for (let i = startIndex; i < endIndex; i++) {
+                const parent = parentData[i];
                 const row = table.insertRow();
                 row.insertCell().textContent = parent.id;
                 row.insertCell().textContent = parent.name;
@@ -48,7 +80,18 @@ To implement the export to Excel functionality while maintaining the order of th
                 checkbox.type = 'checkbox';
                 checkbox.dataset.parentId = parent.id;
                 checkboxCell.appendChild(checkbox);
-            });
+            }
+
+            // Render pagination buttons
+            for (let i = 1; i <= numPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    renderTable();
+                });
+                pagination.appendChild(button);
+            }
 
             document.getElementById('searchInput').addEventListener('input', searchParentRows);
         }
@@ -98,4 +141,4 @@ To implement the export to Excel functionality while maintaining the order of th
 </html>
 ```
 
-This code creates a basic HTML table with parent rows and checkboxes for selection. You can search for parent rows using the search box. When exporting to Excel, it collects selected parent rows along with their child rows and exports them in the specified order.
+In this code, I've added pagination buttons below the table, allowing users to navigate through different pages of parent rows. The number of items per page is set to 5, but you can adjust it as needed.

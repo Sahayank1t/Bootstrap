@@ -1,0 +1,171 @@
+Apologies for the oversight. Let's add filtering functionality to the parent columns. Here's the updated implementation:
+
+HTML (index.html):
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collapsible DataTable</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="filter">
+        <input type="text" placeholder="Filter by Parent ID" onkeyup="filterParentData('id', this.value)">
+        <input type="text" placeholder="Filter by Parent Name" onkeyup="filterParentData('name', this.value)">
+    </div>
+    <div id="datatable"></div>
+    <button onclick="exportToExcel()">Export to Excel</button>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+JavaScript (script.js):
+```javascript
+// Sample data arrays
+const parentData = [
+    { id: 1, name: "Parent 1" },
+    { id: 2, name: "Parent 2" },
+    // Add more parent data as needed
+];
+
+const childData = [
+    { parentId: 1, childName: "Child 1" },
+    { parentId: 1, childName: "Child 2" },
+    { parentId: 2, childName: "Child 3" },
+    // Add more child data as needed
+];
+
+// Function to render the DataTable
+function renderDataTable() {
+    const dataTable = document.getElementById('datatable');
+    // Clear existing content
+    dataTable.innerHTML = '';
+
+    // Loop through parent data
+    parentData.forEach(parent => {
+        const parentRow = document.createElement('div');
+        parentRow.classList.add('parent-row');
+        
+        // Create checkbox for parent selection
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = parent.id;
+        
+        // Create parent data display
+        const parentInfo = document.createElement('span');
+        parentInfo.textContent = `Parent ID: ${parent.id}, Name: ${parent.name}`;
+        
+        parentRow.appendChild(checkbox);
+        parentRow.appendChild(parentInfo);
+        
+        // Create child data display
+        const childContainer = document.createElement('div');
+        childContainer.classList.add('child-container');
+        
+        // Loop through child data
+        const children = childData.filter(child => child.parentId === parent.id);
+        children.forEach(child => {
+            const childInfo = document.createElement('span');
+            childInfo.textContent = `Child Name: ${child.childName}`;
+            childContainer.appendChild(childInfo);
+        });
+        
+        parentRow.appendChild(childContainer);
+        
+        dataTable.appendChild(parentRow);
+    });
+}
+
+// Function to filter parent data by column
+function filterParentData(column, value) {
+    const filteredData = parentData.filter(parent => parent[column].toString().toLowerCase().includes(value.toLowerCase()));
+    renderFilteredDataTable(filteredData);
+}
+
+// Function to render filtered DataTable
+function renderFilteredDataTable(filteredData) {
+    const dataTable = document.getElementById('datatable');
+    // Clear existing content
+    dataTable.innerHTML = '';
+
+    // Loop through filtered parent data
+    filteredData.forEach(parent => {
+        const parentRow = document.createElement('div');
+        parentRow.classList.add('parent-row');
+        
+        // Create checkbox for parent selection
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = parent.id;
+        
+        // Create parent data display
+        const parentInfo = document.createElement('span');
+        parentInfo.textContent = `Parent ID: ${parent.id}, Name: ${parent.name}`;
+        
+        parentRow.appendChild(checkbox);
+        parentRow.appendChild(parentInfo);
+        
+        // Create child data display
+        const childContainer = document.createElement('div');
+        childContainer.classList.add('child-container');
+        
+        // Loop through child data
+        const children = childData.filter(child => child.parentId === parent.id);
+        children.forEach(child => {
+            const childInfo = document.createElement('span');
+            childInfo.textContent = `Child Name: ${child.childName}`;
+            childContainer.appendChild(childInfo);
+        });
+        
+        parentRow.appendChild(childContainer);
+        
+        dataTable.appendChild(parentRow);
+    });
+}
+
+// Function to export data to Excel
+function exportToExcel() {
+    const selectedParentIds = Array.from(document.querySelectorAll('.parent-row input[type="checkbox"]:checked')).map(checkbox => parseInt(checkbox.value));
+    const exportData = [];
+    
+    // Loop through selected parent IDs
+    selectedParentIds.forEach(parentId => {
+        // Find the parent data
+        const parent = parentData.find(parent => parent.id === parentId);
+        if (parent) {
+            exportData.push(parent);
+            
+            // Find child data for the selected parent
+            const children = childData.filter(child => child.parentId === parentId);
+            children.forEach(child => {
+                exportData.push(child);
+            });
+        }
+    });
+
+    // Format the data for Excel export
+    let csvContent = "data:text/csv;charset=utf-8,";
+    exportData.forEach(row => {
+        const rowValues = Object.values(row).join(",");
+        csvContent += rowValues + "\n";
+    });
+
+    // Create a link element to trigger the download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "exported_data.csv");
+    document.body.appendChild(link);
+
+    // Trigger the download
+    link.click();
+}
+
+// Call the function to render the DataTable
+renderDataTable();
+```
+
+With these changes, you can now filter the parent data by Parent ID and Parent Name using text input fields, and the DataTable will update accordingly.

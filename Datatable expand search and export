@@ -1,106 +1,101 @@
-To implement the export to Excel functionality while maintaining the order of the display (parent header, parent data, child header, child data), you can use a JavaScript library like SheetJS (js-xlsx) to generate the Excel file. Here's the modified code with the export functionality:
+To implement the export to Excel functionality while maintaining the order of the display (parent header, parent data, child header, child data), you can use a JavaScript library like SheetJS (js-xlsx) to generate the Excel file. Here's the modified code with the export functionality:Below is a basic implementation of the described use case using JavaScript. This includes creating an expandable datatable, searching and selecting parent rows, and exporting selected rows and their child rows to Excel in the specified order:
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expandable DataTable</title>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expandable Datatable</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 </head>
 <body>
-<h1>Expandable DataTable</h1>
-<input type="text" id="searchInput" placeholder="Search parent rows">
-<table id="dataTable" class="display">
-  <thead>
-    <tr>
-      <th>Select</th>
-      <th>Parent ID</th>
-      <th>Parent Data</th>
-      <th>Child Data</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Table body will be populated dynamically -->
-  </tbody>
-</table>
-<button id="exportBtn">Export to Excel</button>
+    <input type="text" id="searchInput" placeholder="Search parent rows...">
+    <table id="dataTable">
+        <!-- Table headers will be generated dynamically -->
+    </table>
+    <button onclick="exportToExcel()">Export to Excel</button>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
-<script>
-$(document).ready(function() {
-  var parentData = [
-    { id: 1, parentData: "Parent 1" },
-    { id: 2, parentData: "Parent 2" },
-    // Add more parent data as needed
-  ];
+    <script>
+        // Sample data
+        const parentData = [
+            { id: 1, name: "Parent 1" },
+            { id: 2, name: "Parent 2" },
+            { id: 3, name: "Parent 3" }
+        ];
 
-  var childData = [
-    { parentId: 1, childData: "Child 1 of Parent 1" },
-    { parentId: 1, childData: "Child 2 of Parent 1" },
-    { parentId: 2, childData: "Child 1 of Parent 2" },
-    // Add more child data as needed
-  ];
+        const childData = [
+            { parentId: 1, childName: "Child 1-1" },
+            { parentId: 1, childName: "Child 1-2" },
+            { parentId: 2, childName: "Child 2-1" },
+            { parentId: 3, childName: "Child 3-1" }
+        ];
 
-  var dataTable = $('#dataTable').DataTable({
-    data: parentData,
-    columns: [
-      { data: null, render: function(data, type, row) {
-          return '<input type="checkbox" value="' + row.id + '">';
+        // Function to render table
+        function renderTable() {
+            const table = document.getElementById('dataTable');
+            const headerRow = table.createTHead().insertRow();
+            headerRow.insertCell().textContent = 'Parent ID';
+            headerRow.insertCell().textContent = 'Parent Name';
+            headerRow.insertCell().textContent = 'Select';
+
+            parentData.forEach(parent => {
+                const row = table.insertRow();
+                row.insertCell().textContent = parent.id;
+                row.insertCell().textContent = parent.name;
+                const checkboxCell = row.insertCell();
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.dataset.parentId = parent.id;
+                checkboxCell.appendChild(checkbox);
+            });
+
+            document.getElementById('searchInput').addEventListener('input', searchParentRows);
         }
-      },
-      { data: 'id' },
-      { data: 'parentData' },
-      { data: null, render: function(data, type, row) {
-          var children = childData.filter(function(child) {
-            return child.parentId === row.id;
-          });
-          return children.map(function(child) {
-            return child.childData;
-          }).join('<br>');
+
+        // Function to search parent rows
+        function searchParentRows() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.getElementById('dataTable');
+            const rows = table.getElementsByTagName('tr');
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                if (cells.length > 0) {
+                    const parentName = cells[1].textContent.toLowerCase();
+                    row.style.display = parentName.includes(searchText) ? '' : 'none';
+                }
+            });
         }
-      }
-    ]
-  });
 
-  $('#searchInput').on('keyup', function() {
-    dataTable.search(this.value).draw();
-  });
+        // Function to export selected rows and their child rows to Excel
+        function exportToExcel() {
+            const selectedParentIds = [];
+            const selectedRows = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
+            const exportData = [];
 
-  $('#exportBtn').on('click', function() {
-    var selectedRows = dataTable.rows('.selected').data().toArray();
-    exportToExcel(selectedRows);
-  });
+            selectedRows.forEach(row => {
+                selectedParentIds.push(row.dataset.parentId);
+                const parentId = parseInt(row.dataset.parentId);
+                const parent = parentData.find(p => p.id === parentId);
+                exportData.push({ 'Parent ID': parent.id, 'Parent Name': parent.name });
 
-  $('#dataTable tbody').on('click', 'input[type="checkbox"]', function() {
-    var $row = $(this).closest('tr');
-    if (this.checked) {
-      $row.addClass('selected');
-    } else {
-      $row.removeClass('selected');
-    }
-  });
+                const children = childData.filter(child => child.parentId === parentId);
+                children.forEach(child => {
+                    exportData.push({ 'Child Name': child.childName });
+                });
+            });
 
-  function exportToExcel(data) {
-    var wb = XLSX.utils.book_new();
-    var ws = XLSX.utils.json_to_sheet(data.map(function(row) {
-      return {
-        "Parent ID": row.id,
-        "Parent Data": row.parentData,
-        "Child Data": row.childData.split("<br>").join("\n") // Split child data by <br> and join with newlines
-      };
-    }));
-    XLSX.utils.book_append_sheet(wb, ws, "Data");
-    var fileName = "export.xlsx";
-    XLSX.writeFile(wb, fileName);
-  }
-});
-</script>
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data');
+            XLSX.writeFile(wb, 'exported_data.xlsx');
+        }
+
+        // Initialize table
+        renderTable();
+    </script>
 </body>
 </html>
 ```
 
-This code exports the selected rows and their child rows to an Excel file while maintaining the order of display as described. It splits child data by `<br>` and joins with newlines to maintain the format in Excel.
+This code creates a basic HTML table with parent rows and checkboxes for selection. You can search for parent rows using the search box. When exporting to Excel, it collects selected parent rows along with their child rows and exports them in the specified order.

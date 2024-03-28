@@ -1,0 +1,94 @@
+Here's a basic implementation of the described use case using JavaScript, HTML, and the SheetJS library for exporting data to Excel:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collapsible DataTable</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+<style>
+    /* Styles for the table */
+</style>
+</head>
+<body>
+<div id="table-container">
+    <table id="parent-table">
+        <!-- Parent table header and body -->
+    </table>
+</div>
+<button id="export-btn">Export to Excel</button>
+
+<script>
+    // Sample data
+    const parentData = [
+        { id: 1, name: "Parent 1" },
+        { id: 2, name: "Parent 2" }
+    ];
+
+    const childData = [
+        { parentId: 1, childId: 101, childName: "Child 1 of Parent 1" },
+        { parentId: 1, childId: 102, childName: "Child 2 of Parent 1" },
+        { parentId: 2, childId: 201, childName: "Child 1 of Parent 2" }
+    ];
+
+    // Function to render parent table
+    function renderParentTable() {
+        const parentTable = document.getElementById('parent-table');
+        parentTable.innerHTML = '';
+        parentData.forEach(parent => {
+            const row = `<tr data-parent-id="${parent.id}">
+                            <td>${parent.name}</td>
+                            <td><input type="checkbox" class="parent-checkbox"></td>
+                        </tr>`;
+            parentTable.innerHTML += row;
+        });
+    }
+
+    // Function to render child rows under each parent
+    function renderChildRows(parentId) {
+        const parentRow = document.querySelector(`tr[data-parent-id="${parentId}"]`);
+        let childRows = '';
+        childData.forEach(child => {
+            if (child.parentId === parentId) {
+                childRows += `<tr data-parent-id="${parentId}">
+                                <td>${child.childId}</td>
+                                <td>${child.childName}</td>
+                              </tr>`;
+            }
+        });
+        parentRow.insertAdjacentHTML('afterend', childRows);
+    }
+
+    // Event listener for parent checkbox
+    document.addEventListener('change', function(event) {
+        if (event.target.classList.contains('parent-checkbox')) {
+            const parentId = event.target.closest('tr').getAttribute('data-parent-id');
+            if (event.target.checked) {
+                renderChildRows(parseInt(parentId));
+            } else {
+                const childRows = document.querySelectorAll(`tr[data-parent-id="${parentId}"]`);
+                childRows.forEach(row => row.remove());
+            }
+        }
+    });
+
+    // Event listener for export button
+    document.getElementById('export-btn').addEventListener('click', function() {
+        const wb = XLSX.utils.book_new();
+        const wsParent = XLSX.utils.table_to_sheet(document.getElementById('parent-table'));
+        XLSX.utils.book_append_sheet(wb, wsParent, 'Parent Data');
+        const wsChild = XLSX.utils.table_to_sheet(document.getElementById('parent-table'));
+        XLSX.utils.book_append_sheet(wb, wsChild, 'Child Data');
+        XLSX.writeFile(wb, 'data.xlsx');
+    });
+
+    // Initial rendering
+    renderParentTable();
+</script>
+</body>
+</html>
+```
+
+This code sets up a basic HTML structure with a parent table and child rows. It allows selecting parent rows with checkboxes and exports the selected parent rows along with their child rows to an Excel file when the export button is clicked. You may need to customize the styling and refine the functionality according to your specific requirements.

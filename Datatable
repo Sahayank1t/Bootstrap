@@ -1,3 +1,6 @@
+Here's a basic implementation of the described use case using JavaScript:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,109 +8,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expandable Datatable</title>
   <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    th, td {
-      padding: 8px;
-      border: 1px solid #ddd;
-    }
-    .child-row {
-      background-color: #f2f2f2;
-      indent: 10px;
-    }
+    /* Add your CSS styles here */
   </style>
 </head>
 <body>
-  <h1>Expandable Datatable</h1>
-  <input type="text" id="search-box" placeholder="Search">
-  <button id="export-btn">Export to Excel</button>
-  <table id="data-table">
+  <input type="text" id="searchInput" placeholder="Search...">
+  <button onclick="exportToExcel()">Export to Excel</button>
+  <table id="datatable">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Expand</th>
         <th>Select</th>
+        <th>Parent Column 1</th>
+        <th>Parent Column 2</th>
       </tr>
     </thead>
-    </table>
-  <script src="script.js"></script>
+    <tbody id="tableBody">
+      <!-- Table rows will be dynamically generated here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Sample data arrays
+    const parentData = [
+      { id: 1, column1: 'Parent 1-1', column2: 'Parent 1-2' },
+      { id: 2, column1: 'Parent 2-1', column2: 'Parent 2-2' },
+      // Add more parent data as needed
+    ];
+
+    const childData = [
+      { parentId: 1, childColumn1: 'Child 1-1', childColumn2: 'Child 1-2' },
+      { parentId: 1, childColumn1: 'Child 1-3', childColumn2: 'Child 1-4' },
+      { parentId: 2, childColumn1: 'Child 2-1', childColumn2: 'Child 2-2' },
+      // Add more child data as needed
+    ];
+
+    // Function to render the table
+    function renderTable() {
+      const tableBody = document.getElementById('tableBody');
+      tableBody.innerHTML = '';
+      
+      parentData.forEach(parent => {
+        const parentRow = `
+          <tr>
+            <td><input type="checkbox" value="${parent.id}" onchange="updateExportData(this)"></td>
+            <td>${parent.column1}</td>
+            <td>${parent.column2}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += parentRow;
+
+        const childRows = childData.filter(child => child.parentId === parent.id);
+        childRows.forEach(child => {
+          const childRow = `
+            <tr class="child-row">
+              <td></td>
+              <td>${child.childColumn1}</td>
+              <td>${child.childColumn2}</td>
+            </tr>
+          `;
+          tableBody.innerHTML += childRow;
+        });
+      });
+    }
+
+    // Function to filter table rows based on search input
+    function filterTable() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#datatable tbody tr');
+
+      rows.forEach(row => {
+        const isVisible = Array.from(row.children).some(cell => cell.textContent.toLowerCase().includes(searchInput));
+        row.style.display = isVisible ? '' : 'none';
+      });
+    }
+
+    // Function to track selected rows for export
+    let exportData = [];
+
+    function updateExportData(checkbox) {
+      const id = parseInt(checkbox.value);
+      if (checkbox.checked) {
+        exportData.push(id);
+      } else {
+        const index = exportData.indexOf(id);
+        if (index !== -1) {
+          exportData.splice(index, 1);
+        }
+      }
+    }
+
+    // Function to export selected rows and their child rows to Excel (dummy implementation)
+    function exportToExcel() {
+      const selectedRows = parentData.filter(parent => exportData.includes(parent.id));
+      const selectedChildRows = childData.filter(child => exportData.includes(child.parentId));
+      
+      // Dummy export functionality (replace with your actual export logic)
+      console.log('Selected Rows:', selectedRows);
+      console.log('Selected Child Rows:', selectedChildRows);
+    }
+
+    // Initial rendering
+    renderTable();
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', filterTable);
+  </script>
 </body>
 </html>
+```
 
+This code sets up a basic HTML page with a table that displays parent rows and their corresponding child rows in an expandable format. It includes functionality for searching, selecting rows for export, and exporting the selected rows and their child rows to Excel (dummy implementation). You can customize the styling and export functionality as needed. => {
 
-const dataTable = document.getElementById('data-table');
-
-// Define data structures
-const parentData = [
-  { id: 1, name: 'Parent 1', description: 'This is parent 1 description' },
-  { id: 2, name: 'Parent 2', description: 'This is parent 2 description' },
-  { id: 3, name: 'Parent 3', description: 'This is parent 3 description' },
-];
-
-const childData = [
-  { id: 1, parentId: 1, details: 'Child details for Parent 1' },
-  { id: 2, parentId: 1, details: 'Another child for Parent 1' },
-  { id: 3, parentId: 2, details: 'Child details for Parent 2' },
-  { id: 4, parentId: 3, details: 'Child 1 of Parent 3' },
-  { id: 5, parentId: 3, details: 'Child 2 of Parent 3' },
-];
-
-// Function to join parent and child data
-function joinData(parentArr, childArr) {
-  return parentArr.map(parent => {
-    const children = childArr.filter(child => child.parentId === parent.id);
-    return { ...parent, children };
-  });
-}
-
-// Prepare data with joined children
-const data = joinData(parentData, childData);
-
-// Function to render table rows
-function renderRow(row) {
-  const tr = document.createElement('tr');
-  tr.classList.add(row.children ? 'parent-row' : 'child-row');
-  tr.innerHTML = `
-    <td><span class="math-inline">\{row\.name ? row\.name \: ''\}</td\>
-<td\></span>{row.description ? row.description : ''}</td>
-    <td>
-      ${row.children ? `<button class="toggle-btn">Expand</button>` : ''}
-    </td>
-    <td>
-      <input type="checkbox" class="row-checkbox">
-    </td>
-  `;
-
-  // Add click event listener for expand/collapse toggle
-  if (row.children) {
-    tr.querySelector('.toggle-btn').addEventListener('click', () => {
-      const children = row.children;
-      if (children.length) {
-        const childRows = children.map(renderChildRow);
-        const nextRow = tr.nextElementSibling;
-        if (nextRow && nextRow.classList.contains('child-row')) {
-          nextRow.remove(); // Collapse existing child rows
-        } else {
-          tr.after(...childRows); // Expand and insert child rows
-        }
-        tr.querySelector('.toggle-btn').textContent = children.length ? 'Collapse' : 'Expand';
-      }
-    });
-  }
-
-  return tr;
-}
-
-// Render initial table body
-const tbody = document.createElement('tbody');
-data.forEach(row => tbody.appendChild(renderRow(row)));
-dataTable.appendChild(tbody);
-
-// Datatable functionalities
-
-// Enable searching
-const searchInput = document.getElementById('search-box');
-searchInput.addEventListener('keyup', () => {

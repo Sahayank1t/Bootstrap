@@ -1,0 +1,164 @@
+To implement column-level search for all the columns, we'll modify the `searchParentRows` function to search for the input text in each column individually. Here's the updated code:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expandable Datatable with Pagination</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</head>
+<body>
+    <input type="text" id="searchInput" placeholder="Search...">
+    <table id="dataTable">
+        <!-- Table headers will be generated dynamically -->
+    </table>
+    <div id="pagination"></div>
+    <button onclick="exportToExcel()">Export to Excel</button>
+
+    <script>
+        // Sample data
+        const parentData = [
+            { id: 1, name: "Parent 1", age: 30 },
+            { id: 2, name: "Parent 2", age: 35 },
+            { id: 3, name: "Parent 3", age: 40 },
+            { id: 4, name: "Parent 4", age: 25 },
+            { id: 5, name: "Parent 5", age: 45 },
+            { id: 6, name: "Parent 6", age: 28 },
+            { id: 7, name: "Parent 7", age: 32 },
+            { id: 8, name: "Parent 8", age: 37 },
+            { id: 9, name: "Parent 9", age: 42 },
+            { id: 10, name: "Parent 10", age: 27 }
+        ];
+
+        const childData = [
+            { parentId: 1, childName: "Child 1-1" },
+            { parentId: 1, childName: "Child 1-2" },
+            { parentId: 2, childName: "Child 2-1" },
+            { parentId: 3, childName: "Child 3-1" },
+            { parentId: 4, childName: "Child 4-1" },
+            { parentId: 5, childName: "Child 5-1" },
+            { parentId: 6, childName: "Child 6-1" },
+            { parentId: 7, childName: "Child 7-1" },
+            { parentId: 8, childName: "Child 8-1" },
+            { parentId: 9, childName: "Child 9-1" },
+            { parentId: 10, childName: "Child 10-1" }
+        ];
+
+        const itemsPerPage = 5;
+        let currentPage = 1;
+        let selectedParentIds = [];
+
+        // Function to render table with pagination
+        function renderTable() {
+            const table = document.getElementById('dataTable');
+            const pagination = document.getElementById('pagination');
+            const numPages = Math.ceil(parentData.length / itemsPerPage);
+
+            // Clear existing table and pagination
+            table.innerHTML = '';
+            pagination.innerHTML = '';
+
+            // Generate table headers
+            const headerRow = table.createTHead().insertRow();
+            headerRow.insertCell().textContent = 'Parent ID';
+            headerRow.insertCell().textContent = 'Parent Name';
+            headerRow.insertCell().textContent = 'Age';
+            headerRow.insertCell().textContent = 'Select';
+
+            // Calculate start and end index for current page
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, parentData.length);
+
+            // Render parent rows for current page
+            for (let i = startIndex; i < endIndex; i++) {
+                const parent = parentData[i];
+                const row = table.insertRow();
+                row.insertCell().textContent = parent.id;
+                row.insertCell().textContent = parent.name;
+                row.insertCell().textContent = parent.age;
+                const checkboxCell = row.insertCell();
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.dataset.parentId = parent.id;
+                checkbox.checked = selectedParentIds.includes(parent.id.toString());
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        selectedParentIds.push(parent.id.toString());
+                    } else {
+                        selectedParentIds = selectedParentIds.filter(id => id !== parent.id.toString());
+                    }
+                });
+                checkboxCell.appendChild(checkbox);
+            }
+
+            // Render pagination buttons
+            for (let i = 1; i <= numPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    renderTable();
+                });
+                pagination.appendChild(button);
+            }
+
+            document.getElementById('searchInput').addEventListener('input', searchParentRows);
+        }
+
+        // Function to search parent rows
+        function searchParentRows() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.getElementById('dataTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+                const row = rows[i];
+                const cells = row.getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < cells.length; j++) {
+                    const cellText = cells[j].textContent.toLowerCase();
+                    if (cellText.includes(searchText)) {
+                        found = true;
+                        break;
+                    }
+                }
+                row.style.display = found ? '' : 'none';
+            }
+        }
+
+        // Function to export selected rows and their child rows to Excel
+        function exportToExcel() {
+            const exportData = [];
+
+            selectedParentIds.forEach(id => {
+                const parent = parentData.find(p => p.id.toString() === id);
+                if (parent) {
+                    exportData.push({ 'Parent ID': parent.id, 'Parent Name': parent.name, 'Age': parent.age });
+
+                    const children = childData.filter(child => child.parentId.toString() === id);
+                    children.forEach(child => {
+                        exportData.push({ 'Child Name': child.childName });
+                    });
+                }
+            });
+
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Data');
+            XLSX.writeFile(wb, 'exported_data.xlsx');
+        }
+
+        // Initialize table
+        renderTable();
+    </script>
+</body>
+</html>
+```
+
+In this updated code:
+
+- The `searchParentRows` function loops through all rows and checks each cell's text content to see if it includes the search text.
+- If any cell contains the search text, the corresponding row is displayed; otherwise, it's hidden.
+- The export functionality remains the same, exporting selected parent rows and their child rows to Excel.

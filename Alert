@@ -1,0 +1,57 @@
+To achieve this, you can use Bootstrap for styling and jQuery for handling the click event. Here's an example code snippet:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bootstrap Alert Example</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style>
+    /* Positioning the button */
+    #alertButton {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Button to trigger the alert -->
+<button id="alertButton" class="btn btn-primary">Show Alert</button>
+
+<!-- Bootstrap Alert -->
+<div id="myAlert" class="alert alert-success alert-dismissible fade" role="alert">
+  This is a Bootstrap alert.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<script>
+  // jQuery to handle button click
+  $(document).ready(function(){
+    $("#alertButton").click(function(){
+      $("#myAlert").addClass("show"); // Adding 'show' class to display the alert
+      $("#myAlert").alert(); // Initializing Bootstrap alert
+    });
+  });
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+```
+
+In this code:
+
+- The button is positioned at the bottom right using CSS.
+- On button click, jQuery adds the "show" class to the alert, making it visible.
+- Bootstrap's JavaScript is used to initialize the alert for dismissal functionality.

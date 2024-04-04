@@ -1,33 +1,51 @@
-function copyArrayToClipboard(tableData) {
-  // Create the table data as tab-separated plain text
-  let tableText = '';
-  for (const row of tableData) {
-    tableText += row.join('\t') + '\n'; // Join row with tabs and add newline
+To generate a text file with the array data represented as a table in the email body using JavaScript, you can use the following code snippet:
+
+```javascript
+function generateEmail(arrayData) {
+  let emailBody = '';
+
+  // Add table header
+  emailBody += '<table border="1">';
+  emailBody += '<tr>';
+  for (let i = 0; i < arrayData[0].length; i++) {
+    emailBody += '<th>' + arrayData[0][i] + '</th>';
+  }
+  emailBody += '</tr>';
+
+  // Add table rows
+  for (let i = 1; i < arrayData.length; i++) {
+    emailBody += '<tr>';
+    for (let j = 0; j < arrayData[i].length; j++) {
+      emailBody += '<td>' + arrayData[i][j] + '</td>';
+    }
+    emailBody += '</tr>';
   }
 
-  // Create a temporary element to hold the table text
-  const textArea = document.createElement('textarea');
-  textArea.style.position = 'fixed';
-  textArea.style.left = '-999999px';
-  textArea.value = tableText;
+  emailBody += '</table>';
 
-  // Append the textarea to the body, select its content, and copy
-  document.body.appendChild(textArea);
-  textArea.select();
-  document.execCommand('copy');
-  document.body.removeChild(textArea);
+  // Convert to text file format
+  const textFileContent = 'data:text/plain;charset=utf-8,' + encodeURIComponent(emailBody);
 
-  // Display a success message (optional)
-  alert('Array data copied to clipboard as a table!');
+  // Create a link to download the text file
+  const downloadLink = document.createElement('a');
+  downloadLink.setAttribute('href', textFileContent);
+  downloadLink.setAttribute('download', 'email_body.txt');
+  
+  // Trigger the download
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
 }
 
-// Example usage:
-const myArray = [
-  ['Column 1', 'Column 2', 'Column 3'],
-  ['Data 1-1', 'Data 1-2', 'Data 1-3'],
-  ['Data 2-1', 'Data 2-2', 'Data 2-3'],
+// Example array data
+const arrayData = [
+  ['Name', 'Age', 'Email'],
+  ['John Doe', '30', 'john@example.com'],
+  ['Jane Smith', '25', 'jane@example.com'],
+  ['Mike Johnson', '35', 'mike@example.com']
 ];
 
-const copyButton = document.getElementById('copyButton');
-copyButton.addEventListener('click', () => copyArrayToClipboard(myArray));
+// Generate email text file
+generateEmail(arrayData);
+```
 
+This code will generate a text file with the array data represented as a table in the email body, and it will prompt the user to download the file.

@@ -1,0 +1,35 @@
+You can convert an array to an HTML table structure using JavaScript by iterating through the array and dynamically creating the table elements. Here's a basic example:
+
+```javascript
+// Sample array
+var data = [
+  ["Name", "Age", "Country"],
+  ["John", 30, "USA"],
+  ["Alice", 25, "Canada"],
+  ["Bob", 35, "UK"]
+];
+
+// Function to convert array to HTML table
+function arrayToTable(data) {
+  var table = document.createElement('table');
+  
+  for (var i = 0; i < data.length; i++) {
+    var row = document.createElement('tr');
+    
+    for (var j = 0; j < data[i].length; j++) {
+      var cell = document.createElement('td');
+      cell.textContent = data[i][j];
+      row.appendChild(cell);
+    }
+    
+    table.appendChild(row);
+  }
+  
+  return table;
+}
+
+// Convert array to HTML table and append it to the body
+document.body.appendChild(arrayToTable(data));
+```
+
+This code dynamically creates a table element, iterates through the array, creates table rows and cells, and populates them with the array data. Finally, it appends the table to the body of the HTML document.

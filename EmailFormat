@@ -1,0 +1,62 @@
+Here's how to generate an email using `mailto` from an unstructured multi-column, multi-row array as the email body with good formatting using JavaScript:
+
+```javascript
+function generateEmailBody(data) {
+  // Check if data is an array
+  if (!Array.isArray(data)) {
+    throw new Error("Data must be an array");
+  }
+
+  // Define table headers (adjust these as needed)
+  const headers = data[0]; // Assuming first row contains headers
+
+  // Filter out header row from data
+  const rows = data.slice(1);
+
+  // Build table content
+  let body = "<table>";
+  body += "<tr>";
+  headers.forEach(header => {
+    body += `<th>${header}</th>`;
+  });
+  body += "</tr>";
+
+  rows.forEach(row => {
+    body += "<tr>";
+    row.forEach(cell => {
+      body += `<td>${cell}</td>`;
+    });
+    body += "</tr>";
+  });
+
+  body += "</table>";
+
+  // Encode newlines for mailto link
+  body = encodeURIComponent(body);
+
+  return body;
+}
+
+// Example usage
+const data = [
+  ["Name", "Email", "Phone"],
+  ["John Doe", "john.doe@example.com", "+1234567890"],
+  ["Jane Smith", "jane.smith@example.com", "+9876543210"],
+];
+
+const emailBody = generateEmailBody(data);
+const mailtoLink = `mailto:?body=${emailBody}`;
+
+console.log(mailtoLink);
+```
+
+This code defines a function `generateEmailBody` that takes the data array as input. It checks if the data is an array and throws an error if not. 
+
+* It then extracts the headers from the first row of the data.
+* It filters out the header row to get the actual data rows.
+* It builds an HTML table string with the data.
+* Finally, it encodes the table string using `encodeURIComponent` for safe inclusion in the `mailto` link.
+
+The example usage shows how to use the function with sample data. The resulting `mailtoLink` can be used to open an email client with the formatted table as the email body.
+
+**Note:** This approach uses a basic HTML table for formatting. You can customize the table styles further using CSS within the generated HTML string. 

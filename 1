@@ -1,0 +1,61 @@
+To convert HTML table formatting to plain text while retaining a similar tabular structure, you can use JavaScript to parse the HTML table and format it into plain text. Here's a code example to achieve that:
+
+```javascript
+function convertHtmlToPlainText(html) {
+  // Create a temporary DOM element
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = html;
+
+  // Extract table rows and cells
+  const rows = tempElement.querySelectorAll('tr');
+  let plainText = '';
+
+  // Loop through rows
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('th, td');
+    let rowText = '';
+
+    // Loop through cells in a row
+    cells.forEach(cell => {
+      rowText += cell.textContent.trim() + '\t'; // Add cell content with tab separator
+    });
+
+    // Add row text with line break
+    plainText += rowText.trim() + '\n';
+  });
+
+  return plainText;
+}
+
+// Example HTML table
+const htmlTable = `
+<table border="1">
+  <tr>
+    <th>Name</th>
+    <th>Age</th>
+    <th>Email</th>
+  </tr>
+  <tr>
+    <td>John Doe</td>
+    <td>30</td>
+    <td>john@example.com</td>
+  </tr>
+  <tr>
+    <td>Jane Smith</td>
+    <td>25</td>
+    <td>jane@example.com</td>
+  </tr>
+  <tr>
+    <td>Mike Johnson</td>
+    <td>35</td>
+    <td>mike@example.com</td>
+  </tr>
+</table>
+`;
+
+// Convert HTML table to plain text
+const plainText = convertHtmlToPlainText(htmlTable);
+console.log(plainText);
+```
+
+This code will output the plain text representation of the HTML table with similar formatting as the original table structure. You can then use this function to convert any HTML table to plain text.

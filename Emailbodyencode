@@ -1,0 +1,44 @@
+You can achieve this by first converting the array to an HTML table structure and then encoding it as a URI component to use in the `mailto` link. Here's how you can do it:
+
+```javascript
+// Sample array
+var data = [
+  ["Name", "Age", "Country"],
+  ["John", 30, "USA"],
+  ["Alice", 25, "Canada"],
+  ["Bob", 35, "UK"]
+];
+
+// Function to convert array to HTML table
+function arrayToTable(data) {
+  var html = '<table border="1">';
+  
+  for (var i = 0; i < data.length; i++) {
+    html += '<tr>';
+    
+    for (var j = 0; j < data[i].length; j++) {
+      html += '<td>' + data[i][j] + '</td>';
+    }
+    
+    html += '</tr>';
+  }
+  
+  html += '</table>';
+  
+  return html;
+}
+
+// Convert array to HTML table
+var tableHtml = arrayToTable(data);
+
+// Encode the HTML content
+var encodedHtml = encodeURIComponent(tableHtml);
+
+// Construct the mailto link
+var mailtoLink = 'mailto:recipient@example.com?subject=Email%20Subject&body=' + encodedHtml;
+
+// Open the email client with the mailto link
+window.location.href = mailtoLink;
+```
+
+This code will create a `mailto` link with the email address of the recipient, a subject, and the body containing the HTML table. When the link is clicked, it will open the user's default email client with the pre-filled email. Make sure to replace `"recipient@example.com"` with the actual email address and `"Email%20Subject"` with the desired subject line.

@@ -1,28 +1,15 @@
 function copyArrayToClipboard(tableData) {
-  // Create a temporary element to hold the table data
-  const table = document.createElement('table');
-
-  // Create table header row
-  const headerRow = table.insertRow();
-  for (const header of tableData[0]) { // Assuming first element is header
-    const cell = headerRow.insertCell();
-    cell.textContent = header;
+  // Create the table data as tab-separated plain text
+  let tableText = '';
+  for (const row of tableData) {
+    tableText += row.join('\t') + '\n'; // Join row with tabs and add newline
   }
 
-  // Create data rows
-  for (let i = 1; i < tableData.length; i++) {
-    const dataRow = table.insertRow();
-    for (const value of tableData[i]) {
-      const cell = dataRow.insertCell();
-      cell.textContent = value;
-    }
-  }
-
-  // Create a temporary element to hold the table as text with tab separators
+  // Create a temporary element to hold the table text
   const textArea = document.createElement('textarea');
   textArea.style.position = 'fixed';
   textArea.style.left = '-999999px';
-  textArea.value = table.outerHTML.replace(/<\/?[^>]+(>|$)/g, ''); // Remove HTML tags for plain text
+  textArea.value = tableText;
 
   // Append the textarea to the body, select its content, and copy
   document.body.appendChild(textArea);
@@ -43,3 +30,4 @@ const myArray = [
 
 const copyButton = document.getElementById('copyButton');
 copyButton.addEventListener('click', () => copyArrayToClipboard(myArray));
+

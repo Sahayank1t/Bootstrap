@@ -1,10 +1,12 @@
-const tableHtml = tableElement.outerHTML;
+ // Constructing the email body
+    let emailBody = "Email Body:\n\n";
 
-    // Encode the HTML content
-    const encodedTableHtml = encodeURIComponent(tableHtml);
-
-    // Create the mailto link with the encoded HTML content as the body
-    const mailtoLink = `mailto:?subject=Table%20in%20Email&body=${encodedTableHtml}`;
-
-    // Open the mailto link
-    window.location.href = mailtoLink;
+    // Iterate over the array
+    for (let i = 0; i < dynamicArray.length; i++) {
+        // Add content of each element to the email body
+        emailBody += "Element " + (i+1) + ":\n";
+        for (let j = 0; j < dynamicArray[i].length; j++) {
+            emailBody += dynamicArray[i][j] + "\n";
+        }
+        emailBody += "\n";
+    }

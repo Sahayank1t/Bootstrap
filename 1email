@@ -1,47 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create Outlook .msg File</title>
-</head>
-<body>
-<h1>Create Outlook .msg File</h1>
-<button id="generateButton">Generate .msg File</button>
+const tableHtml = tableElement.outerHTML;
 
-<script>
-document.getElementById('generateButton').addEventListener('click', function() {
-    // Define your HTML content
-    const htmlContent = `
-    <html>
-    <head>
-        <title>Test Email</title>
-    </head>
-    <body>
-        <h1>Hello, Outlook!</h1>
-        <p>This is a test email.</p>
-    </body>
-    </html>`;
+    // Encode the HTML content
+    const encodedTableHtml = encodeURIComponent(tableHtml);
 
-    // Generate .msg file content
-    const msgContent = `From: sender@example.com\r\n`
-                    + `To: recipient@example.com\r\n`
-                    + `Subject: Test Email\r\n`
-                    + `Content-Type: text/html; charset=utf-8\r\n`
-                    + `Content-Transfer-Encoding: quoted-printable\r\n\r\n`
-                    + `${encodeURIComponent(htmlContent)}`;
+    // Create the mailto link with the encoded HTML content as the body
+    const mailtoLink = `mailto:?subject=Table%20in%20Email&body=${encodedTableHtml}`;
 
-    // Create a Blob from the content
-    const blob = new Blob([msgContent], { type: 'application/vnd.ms-outlook-message' });
-
-    // Create a link element
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'test_email.msg'; // Specify the filename
-
-    // Trigger download
-    link.click();
-});
-</script>
-</body>
-</html>
+    // Open the mailto link
+    window.location.href = mailtoLink;

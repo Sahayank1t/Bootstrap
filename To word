@@ -1,9 +1,9 @@
-Apologies for the inconvenience. Let's try another method using the `docxtemplater` library, which might provide more reliable conversion:
+I apologize for the inconvenience. Let's try a different approach using the `html-docx-js` library. Here's an example:
 
-First, you need to include the `docxtemplater` library in your project. You can either download it or use a CDN link. Here is an example using the CDN link:
+First, include the library in your HTML file:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.20.1/docxtemplater.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.5.0/html-docx.js"></script>
 ```
 
 Then, you can use the following JavaScript code:
@@ -12,24 +12,14 @@ Then, you can use the following JavaScript code:
 // Assuming your HTML content is stored in a variable named htmlContent
 var htmlContent = "<p>Your HTML content here</p>";
 
-// Create a new docxtemplater instance
-var doc = new Docxtemplater();
-
-// Load the HTML content
-doc.loadZip(new JSZip().file("word/document.xml", htmlContent));
-
-// Generate the .docx file
-var out = doc.getZip().generate({
-    type: "blob",
-    mimeType:
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-});
+// Convert HTML to docx format
+var converted = htmlDocx.asBlob(htmlContent);
 
 // Create a link element
 var link = document.createElement("a");
 
 // Set the href attribute to a URL created from the blob
-link.href = URL.createObjectURL(out);
+link.href = window.URL.createObjectURL(converted);
 
 // Set the download attribute to specify the file name
 link.download = "exported_document.docx";
@@ -44,4 +34,4 @@ link.click();
 document.body.removeChild(link);
 ```
 
-This code should properly convert your HTML content to a `.docx` file without any errors upon opening. Make sure to replace `"Your HTML content here"` with the actual HTML content stored in your variable.
+Replace `"Your HTML content here"` with the actual HTML content stored in your variable. This code should properly convert your HTML content to a `.docx` file and initiate the download.

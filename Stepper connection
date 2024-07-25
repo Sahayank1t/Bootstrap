@@ -1,0 +1,124 @@
+I apologize for that. Let's refine the approach to ensure that the steps are properly connected by lines.
+
+Here's the complete solution:
+
+### HTML
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Bootstrap Stepper</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="stepper-wrapper">
+            <div class="stepper-item completed">
+                <div class="step-counter">1</div>
+                <div class="step-name">Step 1</div>
+            </div>
+            <div class="stepper-item active">
+                <div class="step-counter">2</div>
+                <div class="step-name">Step 2</div>
+            </div>
+            <div class="stepper-item">
+                <div class="step-counter">3</div>
+                <div class="step-name">Step 3</div>
+            </div>
+            <div class="stepper-item">
+                <div class="step-counter">4</div>
+                <div class="step-name">Step 4</div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+### CSS (styles.css)
+```css
+body {
+    font-family: Arial, sans-serif;
+}
+
+.stepper-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+}
+
+.stepper-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.stepper-item::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 30px;
+    height: 100%;
+    width: 2px;
+    background: #ccc;
+    z-index: -1;
+}
+
+.stepper-item:last-child::before {
+    height: 30px;
+}
+
+.step-counter {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ccc;
+    color: #fff;
+    text-align: center;
+    line-height: 30px;
+    margin-right: 10px;
+    z-index: 1;
+}
+
+.step-name {
+    font-size: 16px;
+}
+
+.stepper-item.completed .step-counter {
+    background-color: #28a745;
+}
+
+.stepper-item.active .step-counter {
+    background-color: #007bff;
+}
+
+.stepper-item.completed .step-name,
+.stepper-item.active .step-name {
+    font-weight: bold;
+}
+
+.stepper-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 28px;
+    height: calc(100% - 30px);
+    width: 2px;
+    background: #ccc;
+    z-index: -1;
+}
+```
+
+### Explanation
+1. **HTML**: The structure remains the same.
+2. **CSS**:
+   - `stepper-wrapper`: Added a pseudo-element `::before` to create a single continuous line connecting all the steps.
+   - Adjusted the position and size of the line so that it correctly connects the steps.
+
+This will create a single line running through the entire stepper, connecting each step. The line is created by the `stepper-wrapper::before` pseudo-element, which ensures that all steps are connected.

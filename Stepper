@@ -1,0 +1,140 @@
+Creating a vertical bootstrap stepper with active and completed steps using HTML, CSS, and JavaScript can be done by leveraging Bootstrap's classes and custom styling. Below is an example of how you can achieve this:
+
+### HTML
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Bootstrap Stepper</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="stepper-wrapper">
+            <div class="stepper-item completed">
+                <div class="step-counter">1</div>
+                <div class="step-name">Step 1</div>
+            </div>
+            <div class="stepper-item active">
+                <div class="step-counter">2</div>
+                <div class="step-name">Step 2</div>
+            </div>
+            <div class="stepper-item">
+                <div class="step-counter">3</div>
+                <div class="step-name">Step 3</div>
+            </div>
+            <div class="stepper-item">
+                <div class="step-counter">4</div>
+                <div class="step-name">Step 4</div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+### CSS (styles.css)
+```css
+body {
+    font-family: Arial, sans-serif;
+}
+
+.stepper-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.stepper-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.stepper-item::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 30px;
+    height: 50px;
+    width: 2px;
+    background: #ccc;
+    z-index: -1;
+}
+
+.stepper-item:last-child::before {
+    display: none;
+}
+
+.step-counter {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ccc;
+    color: #fff;
+    text-align: center;
+    line-height: 30px;
+    margin-right: 10px;
+}
+
+.step-name {
+    font-size: 16px;
+}
+
+.stepper-item.completed .step-counter {
+    background-color: #28a745;
+}
+
+.stepper-item.active .step-counter {
+    background-color: #007bff;
+}
+
+.stepper-item.completed .step-name,
+.stepper-item.active .step-name {
+    font-weight: bold;
+}
+```
+
+### JavaScript (script.js)
+This example doesn't include any JavaScript functionality as it demonstrates static HTML and CSS. However, if you need to add dynamic behavior, such as changing the active step or marking steps as completed based on user actions, you can add JavaScript accordingly.
+
+Here's a basic example to change the active step:
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+    const steps = document.querySelectorAll('.stepper-item');
+    let currentStep = 1;
+
+    function setActiveStep(step) {
+        steps.forEach((stepElement, index) => {
+            stepElement.classList.remove('active', 'completed');
+            if (index < step - 1) {
+                stepElement.classList.add('completed');
+            } else if (index === step - 1) {
+                stepElement.classList.add('active');
+            }
+        });
+    }
+
+    setActiveStep(currentStep);
+
+    // Example of moving to the next step
+    document.addEventListener('click', function() {
+        if (currentStep < steps.length) {
+            currentStep++;
+            setActiveStep(currentStep);
+        }
+    });
+});
+```
+
+### Explanation
+1. **HTML**: Defines the structure of the stepper with `stepper-wrapper` and `stepper-item` classes.
+2. **CSS**: Provides the styling for the stepper, including completed and active steps.
+3. **JavaScript**: Adds dynamic behavior to update the steps based on user actions.
+
+Feel free to adjust the styling and functionality as per your requirements.

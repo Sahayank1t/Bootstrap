@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collapsible Table</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .collapse-icon {
+            cursor: pointer;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+                <th>Column 4</th>
+                <th>Column 5</th>
+                <th>Column 6</th>
+                <th>Column 7</th>
+                <th>Column 8</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <!-- Dynamic rows will be inserted here -->
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Example JSON data
+    const jsonData = [
+        { "col1": "Data 1", "col2": "Data 2", "col3": "Data 3", "col4": "Data 4", "col5": "Data 5", "col6": "Data 6", "col7": "Data 7", "col8": "Data 8", "col9": "Data 9", "col10": "Data 10" },
+        { "col1": "Data 11", "col2": "Data 12", "col3": "Data 13", "col4": "Data 14", "col5": "Data 15", "col6": "Data 16", "col7": "Data 17", "col8": "Data 18", "col9": "Data 19", "col10": "Data 20" },
+        // Add more rows as needed
+    ];
+
+    // Function to render table rows
+    function renderTable() {
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = '';
+
+        jsonData.forEach((item, index) => {
+            // Create the main table row
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="collapse-icon" data-toggle="collapse" data-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">+</td>
+                <td>${item.col1}</td>
+                <td>${item.col2}</td>
+                <td>${item.col3}</td>
+                <td>${item.col4}</td>
+                <td>${item.col5}</td>
+                <td>${item.col6}</td>
+                <td>${item.col7}</td>
+                <td>${item.col8}</td>
+            `;
+            tableBody.appendChild(row);
+
+            // Create the expandable row
+            const collapseRow = document.createElement('tr');
+            collapseRow.className = 'collapse';
+            collapseRow.id = `collapse${index}`;
+            collapseRow.innerHTML = `
+                <td colspan="9">
+                    <div class="card card-body">
+                        <p><strong>Column 9:</strong> ${item.col9}</p>
+                        <p><strong>Column 10:</strong> ${item.col10}</p>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(collapseRow);
+
+            // Toggle icon change on click
+            row.querySelector('.collapse-icon').addEventListener('click', function () {
+                this.textContent = this.textContent === '+' ? '-' : '+';
+            });
+        });
+    }
+
+    // Render the table on page load
+    renderTable();
+</script>
+
+</body>
+</html>
